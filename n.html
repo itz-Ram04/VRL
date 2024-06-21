@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Submitted Data</title>
+    <link rel="stylesheet" href="style01.css">
+</head>
+<body>
+    <div class="container">
+        <h1>Bookings Details</h1>
+        <div id="submittedData"></div>
+        <button onclick="goBack()">Back</button>
+        <button onclick="deleteAllData()">Delete All Data</button>
+        <button onclick="printData()">Print</button>
+    </div>
+
+    <script>
+        window.onload = function() {
+            displaySubmittedData();
+        };
+
+        function displaySubmittedData() {
+            var submittedDataDiv = document.getElementById('submittedData');
+            var urlParams = new URLSearchParams(window.location.search);
+            var selectedDate = urlParams.get('date');
+
+            // Retrieve data from local storage and filter by date
+            var data = localStorage.getItem('allShipments');
+
+            if (data) {
+                var allShipments = JSON.parse(data);
+
+                // Filter data by selected date
+                if (selectedDate) {
+                    allShipments = allShipments.filter(function(shipment) {
+                        return shipment.date === selectedDate;
+                    });
+                }
+
+                if (allShipments.length > 0) {
+                    var html = "<table><thead><tr><th>LR Number</th><th>Date</th><th>From</th><th>Sender Name</th><th>Sender Mobile</th><th>To</th><th>Receiver Name</th><th>Receiver Mobile</th><th>Description</th><th>Quantity</th><th>Total Amount</th></tr></thead><tbody>";
+
+                    allShipments.forEach(function(shipment) {
+                        html += `<tr><td>${shipment.lrNumber}</td><td>${shipment.date}</td><td>${shipment.from}</td><td>${shipment.senderName}</td><td>${shipment.senderMobile}</td><td>${shipment.to}</td><td>${shipment.receiverName}</td><td>${shipment.receiverMobile}</td><td>${shipment.description}</td><td>${shipment.quantity}</td><td>${shipment.totalAmount}</td></tr>`;
+                    });
+
+                    html += "</tbody></table>";
+                    submittedDataDiv.innerHTML = html;
+                } else {
+                    submittedDataDiv.innerHTML = "<p>No data found for the selected date.</p>";
+                }
+            } else {
+                submittedDataDiv.innerHTML = "<p>No data submitted.</p>";
+            }
+        }
+
+        function goBack() {
+            window.location.href = "welcome.html";
+        }
+
+        function deleteAllData() {
+            // Remove all data from local storage
+            localStorage.removeItem('allShipments');
+
+            // Reload the page to reflect the changes
+            location.reload();
+        }
+
+        function printData() {
+            window.print();
+        }
+    </script>
+</body>
+</html>

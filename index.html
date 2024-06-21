@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>VelanRoadLines</title>
+    <link rel="stylesheet" href="style.css">
+    <script>
+        function validateForm() {
+            var username = document.forms["loginForm"]["username"].value;
+            var password = document.forms["loginForm"]["password"].value;
+            if (username === "" || password === "") {
+                alert("Username and password must be filled out");
+                return false;
+            }
+            if (username !== "ADMIN" || password !== "12345") {
+                alert("Invalid username or password");
+                return false;
+            }
+            window.location.href = "welcome.html"; 
+            return false; 
+        }
+    </script>
+</head>
+<body>
+    <div class="container">
+        <form name="loginForm" onsubmit="return validateForm()">
+            <h1>WELCOME</h1>
+            <label>Username</label>
+            <input type="text" name="username">
+            <label>Password</label>
+            <input type="password" name="password">
+            <button type="submit">Login</button>
+            <a href="#">Forget Password?</a>
+        </form>
+    </div>
+</body>
+</html>

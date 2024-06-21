@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Submitted Data</title>
+    <link rel="stylesheet" href="style01.css">
+</head>
+<body>
+    <div class="container">
+        <h1>Booked Successfully</h1>
+        <div id="submittedData"></div>
+        <button onclick="goBack()">Back</button>
+    </div>
+
+    <script>
+        window.onload = function() {
+            displaySubmittedData();
+        };
+
+        function displaySubmittedData() {
+            var submittedDataDiv = document.getElementById('submittedData');
+
+            // Retrieve data from local storage
+            var data = localStorage.getItem('shipmentData');
+
+            if (data) {
+                data = JSON.parse(data); // Parse the JSON string to object
+
+                var date = data.date;
+                var from = data.from;
+                var senderName = data.senderName;
+                var senderMobile = data.senderMobile;
+                var to = data.to;
+                var receiverName = data.receiverName;
+                var receiverMobile = data.receiverMobile;
+                var description = data.description;
+                var quantity = data.quantity;
+                var totalAmount = data.totalAmount;
+
+                var html = `
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Date</th>
+                                <th>From</th>
+                                <th>Sender Name</th>
+                                <th>Sender Mobile</th>
+                                <th>To</th>
+                                <th>Receiver Name</th>
+                                <th>Receiver Mobile</th>
+                                <th>Description</th>
+                                <th>Quantity</th>
+                                <th>Total Amount</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td>${date}</td>
+                                <td>${from}</td>
+                                <td>${senderName}</td>
+                                <td>${senderMobile}</td>
+                                <td>${to}</td>
+                                <td>${receiverName}</td>
+                                <td>${receiverMobile}</td>
+                                <td>${description}</td>
+                                <td>${quantity}</td>
+                                <td>${totalAmount}</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                `;
+
+                submittedDataDiv.innerHTML = html;
+            } else {
+                submittedDataDiv.innerHTML = "<p>No data submitted.</p>";
+            }
+        }
+
+        function goBack() {
+            window.location.href = "new.html";
+        }
+    </script>
+</body>
+</html>

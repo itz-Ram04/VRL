@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Submitted Data</title>
+    <link rel="stylesheet" href="style01.css">
+</head>
+<body>
+    <div class="container">
+        <h1>Booked Successfully</h1>
+        <div id="submittedData"></div>
+        <button onclick="goBack()">Back</button>
+        <button onclick="printPage()">Print</button>
+    </div>
+
+    <script>
+        window.onload = function() {
+            displaySubmittedData();
+        };
+
+        function displaySubmittedData() {
+            var submittedDataDiv = document.getElementById('submittedData');
+            var urlParams = new URLSearchParams(window.location.search);
+            var selectedDate = urlParams.get('date');
+
+            // Retrieve data from local storage
+            var data = localStorage.getItem('allShipments');
+
+            if (data) {
+                var allShipments = JSON.parse(data);
+
+                // Filter data by selected date if provided
+                if (selectedDate) {
+                    allShipments = allShipments.filter(function(shipment) {
+                        return shipment.date === selectedDate;
+                    });
+                }
+
+                if (allShipments.length > 0) {
+                    // Get the last entered shipment
+                    var lastShipment = allShipments[allShipments.length - 1];
+
+                    var html = "<table><thead><tr><th>LR Number</th><th>Date</th><th>From</th><th>Sender Name</th><th>Sender Mobile</th><th>To</th><th>Receiver Name</th><th>Receiver Mobile</th><th>Description</th><th>Quantity</th><th>Total Amount</th><th>Payment</th></tr></thead><tbody>";
+
+                    // Display details of the last entered shipment
+                    html += `<tr><td>${lastShipment.lrNumber}</td><td>${lastShipment.date}</td><td>${lastShipment.from}</td><td>${lastShipment.senderName}</td><td>${lastShipment.senderMobile}</td><td>${lastShipment.to}</td><td>${lastShipment.receiverName}</td><td>${lastShipment.receiverMobile}</td><td>${lastShipment.description}</td><td>${lastShipment.quantity}</td><td>${lastShipment.totalAmount}</td><td>${lastShipment.paymentOption}</td></tr>`;
+
+                    html += "</tbody></table>";
+                    submittedDataDiv.innerHTML = html;
+                } else {
+                    submittedDataDiv.innerHTML = "<p>No data found for the selected date.</p>";
+                }
+            } else {
+                submittedDataDiv.innerHTML = "<p>No data submitted.</p>";
+            }
+        }
+
+        function goBack() {
+            window.location.href = "welcome.html";
+        }
+
+        function printPage() {
+            window.print();
+        }
+    </script>
+</body>
+</html>

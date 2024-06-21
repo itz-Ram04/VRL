@@ -1,0 +1,191 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body onload="populateDetails()">
+    <div class="container">
+        <p>VELAN ROAD LINES</p>
+        <div>
+            <label for="dateInput">Date:</label>
+            <input type="date" id="dateInput" onchange="updateDate(this.value)">
+        </div>
+
+        <p>Sender Name: <span id="senderNameDisplay"></span></p>
+        <input type="text" id="senderNameInput" onchange="updateSenderName(this.value)">
+        <p>Sender Mobile Number: <span id="senderMobileDisplay"></span></p>
+        <input type="text" id="senderMobileInput" onchange="updateSenderMobile(this.value)">
+        
+        <p>From: <span id="fromDisplay"></span></p>
+        <select id="from" onchange="updateFromPlace(this.value); hideSelect('from')">
+            <option value="">Select a place</option>
+            <option value="Madurai">Madurai</option>
+            <option value="Trichy">Trichy</option>
+            <option value="Tirunelveli">Tirunelveli</option>
+        </select>
+        <p>To: <span id="toDisplay"></span></p>
+        <select id="to" onchange="updateToPlace(this.value); hideSelect('to')">
+            <option value="">Select a place</option>
+            <option value="Chennai">Chennai</option>
+            <option value="Coimbatore">Coimbatore</option>
+            <option value="Salem">Salem</option>
+        </select>
+        
+        <p>Receiver Name: <span id="receiverNameDisplay"></span></p>
+        <input type="text" id="receiverNameInput" onchange="updateReceiverName(this.value)">
+        <p>Receiver Mobile Number: <span id="receiverMobileDisplay"></span></p>
+        <input type="text" id="receiverMobileInput" onchange="updateReceiverMobile(this.value)">
+        
+        <div class="row description">
+            <p>Description: </p><input type="text" id="descriptionInput">
+        </div>
+        <div class="row">
+            <p>Price: <span id="price"></span></p><input type="number" id="priceInput" onchange="updateTotalAmount()">
+        </div>
+        <div class="row">
+            <p>Quantity: <span id="quantity"></span></p><input type="number" id="quantityInput" onchange="updateTotalAmount()">
+        </div>
+        <div class="row">
+            <p>Total Amount: <span id="totalAmount"></span></p>
+        </div>
+        
+        <!-- Payment Option -->
+        <div class="row">
+            <p>Payment: </p>
+            <select id="paymentOption">
+                <option value="paid">Paid</option>
+                <option value="to-pay">To Pay</option>
+            </select>
+        </div>
+        
+        <button type="button" onclick="validateAndSubmit()">Submit</button>
+        <p id="description"></p>
+
+        <!-- Display all stored data -->
+        <div id="allStoredData"></div>
+    </div>
+
+    <script>
+        function updateDate(date) {
+            document.getElementById("dateDisplay").innerText = new Date(date).toDateString();
+        }
+
+        function populateDetails() {
+            var today = new Date().toISOString().substr(0, 10);
+            document.getElementById("dateInput").value = today;
+            updateDate(today);
+        }
+
+        function updateSenderName(name) {
+            document.getElementById("senderNameDisplay").innerText = name;
+        }
+        
+        function updateReceiverName(name) {
+            document.getElementById("receiverNameDisplay").innerText = name;
+        }
+
+        function updateSenderMobile(number) {
+            document.getElementById("senderMobileDisplay").innerText = number;
+        }
+
+        function updateReceiverMobile(number) {
+            document.getElementById("receiverMobileDisplay").innerText = number;
+        }
+
+        function updateFromPlace(place) {
+            var selectedPlace = place || "-";
+            document.getElementById("fromDisplay").innerText = selectedPlace;
+        }
+
+        function updateToPlace(place) {
+            var selectedPlace = place || "-";
+            document.getElementById("toDisplay").innerText = selectedPlace;
+        }
+
+        function updateTotalAmount() {
+            var quantity = parseFloat(document.getElementById("quantityInput").value);
+            var price = parseFloat(document.getElementById("priceInput").value);
+            var totalAmount = isNaN(quantity) || isNaN(price) ? "-" : (quantity * price);
+            document.getElementById("totalAmount").innerText = totalAmount;
+        }
+
+        function hideSelect(id) {
+            var select = document.getElementById(id);
+            select.style.display = "none";
+        }
+
+        function validateAndSubmit() {
+            var date = document.getElementById("dateInput").value;
+            var senderName = document.getElementById("senderNameInput").value;
+            var senderMobile = document.getElementById("senderMobileInput").value;
+            var receiverName = document.getElementById("receiverNameInput").value;
+            var receiverMobile = document.getElementById("receiverMobileInput").value;
+            var fromPlace = document.getElementById("from").value;
+            var toPlace = document.getElementById("to").value;
+            var quantity = document.getElementById("quantityInput").value;
+            var price = document.getElementById("priceInput").value;
+            var description = document.getElementById("descriptionInput").value;
+            var paymentOption = document.getElementById("paymentOption").value;
+
+            if (!date || !senderName || !senderMobile || !receiverName || !receiverMobile || !fromPlace || !toPlace || !quantity || !price || !description || !paymentOption) {
+                alert("Please fill out all fields.");
+                return;
+            }
+
+            // Generate LR number (Serial Number)
+            var lrNumber = generateLRNumber();
+
+            // Calculate total amount
+            var totalAmount = quantity * price;
+
+            // Prepare data object
+            var data = {
+                lrNumber: lrNumber,
+                date: date,
+                senderName: senderName,
+                senderMobile: senderMobile,
+                receiverName: receiverName,
+                receiverMobile: receiverMobile,
+                from: fromPlace,
+                to: toPlace,
+                description: description,
+                quantity: quantity,
+                price: price,
+                totalAmount: totalAmount,
+                paymentOption: paymentOption // Add payment option to data
+            };
+
+            // Retrieve existing data from local storage or initialize an empty array
+            var existingData = localStorage.getItem('allShipments');
+            var allShipments = existingData ? JSON.parse(existingData) : [];
+
+            // Add the new data to the array
+            allShipments.push(data);
+
+            // Store the updated array in local storage
+            localStorage.setItem('allShipments', JSON.stringify(allShipments));
+
+            // Redirect to another page with LR number as query parameter
+            window.location.href = "new.html?lrNumber=" + lrNumber;
+        }
+
+        // Function to generate LR number (Serial Number)
+        function generateLRNumber() {
+            // Retrieve the last LR number from local storage
+            var lastLRNumber = localStorage.getItem('lastLRNumber');
+
+            // If there is no previous LR number or it's undefined, start from 4002
+            var nextLRNumber = lastLRNumber ? parseInt(lastLRNumber) + 1 : 4001;
+
+            // Update the last LR number in local storage
+            localStorage.setItem('lastLRNumber', nextLRNumber);
+
+            return nextLRNumber;
+        }
+    </script>
+</body>
+</html>
